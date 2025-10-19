@@ -1,54 +1,46 @@
 from flask import Flask, request, jsonify
 from newspaper import Article
-import requests
-from bs4 import BeautifulSoup
+import logging
 
 app = Flask(__name__)
 
-@app.route("/", methods=["GET"])
-def home():
-    return jsonify({"message": "News Summarizer API is live!"})
+# Enable debug logging for Render logs
+logging.basicConfig(level=logging.INFO)
 
-@app.route("/summarize", methods=["POST"])
+@app.route('/')
+def home():
+    return jsonify({"message": "📰 News Summarizer API is live!"})
+
+@app.route('/summarize', methods=['POST'])
 def summarize():
     try:
-        data = request.get_json(force=True)
-        url = data.get("url")
-
+        data = request.get_json()
+        url = data.get('url', None)
         if not url:
-            return jsonify({"error": "Missing 'url'"}), 400
+            logging.error("Missing URL in request.")
+            return jsonify({"error": "Missing URL"}), 400
 
-        print(f"📰 Received URL: {url}")
+        logging.info(f"Received URL: {url}")
+        article = Article(url)
+        article.download()
+        article.parse()
+        article.nlp()
 
-        try:
-            article = Article(url)
-            article.download()
-            article.parse()
-            article.nlp()
-            print("✅ Newspaper3k parsed successfully!")
+        summary = {
+            "title": article.title,
+            "authors": article.authors,
+            "publish_date": str(article.publish_date),
+            "summary": article.summary,
+            "top_image": article.top_image
+        }
 
-            return jsonify({
-                "title": article.title,
-                "summary": article.summary
-            })
-
-        except Exception as e:
-            print(f"⚠ Newspaper3k failed: {e}")
-            # fallback to BeautifulSoup
-            r = requests.get(url, timeout=10)
-            soup = BeautifulSoup(r.text, "html.parser")
-
-            paragraphs = [p.get_text() for p in soup.find_all("p")]
-            content = " ".join(paragraphs)
-            return jsonify({
-                "title": soup.title.string if soup.title else "Untitled",
-                "summary": content[:700] if content else "No summary available"
-            })
+        logging.info("✅ Article summarized successfully.")
+        return jsonify(summary)
 
     except Exception as e:
-        print(f"❌ Unexpected error: {e}")
+        logging.exception("Error while summarizing:")
         return jsonify({"error": str(e)}), 500
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000)
