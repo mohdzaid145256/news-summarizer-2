@@ -1,5 +1,10 @@
 Flask==2.3.3
+gunicorn==21.2.0
 newspaper3k==0.2.8
 beautifulsoup4==4.12.2
 requests==2.31.0
-gunicorn==21.2.0
+lxml==4.9.3
+cssselect==1.2.0
+feedparser==6.0.10
+tldextract==3.4.4
+nltk==3.8.1
