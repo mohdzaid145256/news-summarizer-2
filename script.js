@@ -1,37 +1,58 @@
-document.getElementById("summarizeBtn").addEventListener("click", async () => {
-    const url = document.getElementById("urlInput").value.trim();
-    const resultDiv = document.getElementById("result");
-    const titleEl = document.getElementById("title");
-    const summaryEl = document.getElementById("summary");
-  
-    if (!url) {
-      alert("Please enter a valid news article URL.");
-      return;
+const summarizeBtn = document.getElementById("summarizeBtn");
+const urlInput = document.getElementById("urlInput");
+const loader = document.getElementById("loader");
+const output = document.getElementById("output");
+const toggle = document.getElementById("toggle");
+const API_URL = "https://news-summarizer-2-q9t3.onrender.com/summarize"; // Flask backend
+// Typing animation function
+function typeText(element, text, speed = 25) {
+  element.innerHTML = "";
+  let i = 0;
+  function typing() {
+    if (i < text.length) {
+      element.innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typing, speed);
     }
-  
-    resultDiv.style.display = "block";
-    titleEl.textContent = "⏳ Fetching summary...";
-    summaryEl.textContent = "";
-  
-    try {
-      const response = await fetch("/summarize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url })
-      });
-  
-      const data = await response.json();
-  
-      if (data.error) {
-        titleEl.textContent = "⚠️ Error";
-        summaryEl.textContent = "Something went wrong. Please check the URL.";
-      } else {
-        titleEl.textContent = data.title || "Summary";
-        summaryEl.textContent = data.summary || "No summary available.";
-      }
-    } catch (err) {
-      titleEl.textContent = "⚠️ Error";
-      summaryEl.textContent = "Unable to connect to the API.";
+  }
+  typing();
+}
+summarizeBtn.addEventListener("click", async () => {
+  const url = urlInput.value.trim();
+  if (!url) {
+    output.classList.remove("hidden");
+    output.style.color = "red";
+    output.textContent = "⚠️ Please enter a valid article URL.";
+    return;
+  }
+  loader.classList.remove("hidden");
+  output.classList.add("hidden");
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url }),
+    });
+    const data = await res.json();
+    loader.classList.add("hidden");
+    output.classList.remove("hidden");
+
+    if (data.error) {
+      output.style.color = "red";
+      output.textContent = `❌ Error: ${data.error}`;
+    } else {
+      output.style.color = "inherit";
+      const summaryText = `📰 <b>${data.title}</b>\n\n${data.summary}`;
+      typeText(output, summaryText, 20);
     }
-  });
-  
+  } catch (err) {
+    loader.classList.add("hidden");
+    output.classList.remove("hidden");
+    output.style.color = "red";
+    output.textContent = "❌ Request failed. Please try again.";
+  }
+});
+// Theme toggle
+toggle.addEventListener("change", () => {
+  document.body.classList.toggle("light");
+});

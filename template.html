@@ -3,86 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>📰 AI News Summarizer</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <title>AI News Summarizer</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="hero">
-    <div class="overlay"></div>
-    <div class="content">
-      <h1 class="fade-in">🧠 AI News Summarizer</h1>
-      <p class="tagline fade-in-delay">
-        Transform long news articles into clear, concise summaries in seconds.
+  <div class="theme-toggle">
+    <input type="checkbox" id="toggle" />
+    <label for="toggle" class="switch"></label>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <h1>🧠 AI News Summarizer</h1>
+      <p class="subtitle">Transform long news articles into clear, concise summaries powered by AI.</p>
+      <input type="text" id="urlInput" placeholder="Paste a news article URL..." />
+      <button id="summarizeBtn">Summarize</button>
+      <div id="loader" class="loader hidden"></div>
+      <div id="output" class="output hidden"></div>
+      <p class="footer">
+        🚀 Built with <b>Python</b>, <b>Flask</b> & <b>Newspaper3k</b> | Created by <b>Mohd Zaid</b>
       </p>
-
-      <form id="summarize-form" class="fade-in-delay-2">
-        <input type="url" id="url-input" placeholder="Paste a news article URL..." required />
-        <button type="submit">Summarize Now</button>
-      </form>
-
-      <div id="loader" class="loader fade-in-delay-2" style="display:none;">
-        <div class="spinner"></div>
-        <p>Fetching and summarizing article...</p>
-      </div>
-
-      <div id="result" class="result fade-in-delay-3" style="display:none;">
-        <h2 id="article-title"></h2>
-        <img id="article-image" alt="" style="display:none;" />
-        <p><strong>Authors:</strong> <span id="article-authors"></span></p>
-        <p><strong>Published:</strong> <span id="article-date"></span></p>
-        <h3>🧩 Summary</h3>
-        <p id="article-summary"></p>
-      </div>
     </div>
   </div>
 
-  <footer>
-    <p>Built with ❤️ by <strong>Mohd Zaid</strong> | Flask × Newspaper3k × HTML/CSS/JS</p>
-  </footer>
-
-  <script>
-    const form = document.getElementById("summarize-form");
-    const loader = document.getElementById("loader");
-    const result = document.getElementById("result");
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const url = document.getElementById("url-input").value;
-      loader.style.display = "block";
-      result.style.display = "none";
-
-      try {
-        const res = await fetch("/summarize", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url }),
-        });
-        const data = await res.json();
-        loader.style.display = "none";
-
-        if (data.error) {
-          alert("❌ Error: " + data.error);
-          return;
-        }
-
-        document.getElementById("article-title").textContent = data.title || "Untitled";
-        document.getElementById("article-authors").textContent = data.authors.join(", ") || "Unknown";
-        document.getElementById("article-date").textContent = data.publish_date || "N/A";
-        document.getElementById("article-summary").textContent = data.summary || "No summary available.";
-
-        if (data.top_image) {
-          const img = document.getElementById("article-image");
-          img.src = data.top_image;
-          img.style.display = "block";
-        }
-
-        result.style.display = "block";
-        result.scrollIntoView({ behavior: "smooth" });
-      } catch (err) {
-        loader.style.display = "none";
-        alert("⚠️ Something went wrong. Please check the URL and try again.");
-      }
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
