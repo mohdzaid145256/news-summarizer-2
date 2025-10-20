@@ -46,13 +46,19 @@ Responsive UI and deployment on Render
 
 (Backend confirmation on Render)
 
+<img width="726" height="116" alt="Screenshot 2025-10-20 at 7 33 39 AM" src="https://github.com/user-attachments/assets/e38c598b-53ea-4c34-8975-6eb3366536b9" />
+
 ![API Live](./Screenshot%202025-10-20%20at%207.13.01 AM.png)
 
 💻 Web Application Interface
 
 (Beautifully designed, responsive frontend)
 
-![App Interface](./Screenshot%202025-10-20%20at%207.33.39 AM.png)
+<img width="1468" height="823" alt="Screenshot 2025-10-20 at 9 14 23 AM" src="https://github.com/user-attachments/assets/3850a384-4956-4180-80e5-ffe331ba1594" />
+
+![Uploading Screenshot 2025-10-20 at 7.21.06 AM.png…]()
+
+
 
 🔹 System Flow
 
